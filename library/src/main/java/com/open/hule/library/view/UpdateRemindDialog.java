@@ -271,7 +271,7 @@ public class UpdateRemindDialog extends BaseDialog {
             // 非强制更新
             llEvent.setVisibility(View.VISIBLE);
             if (btnCancelUpdate != null) {
-                btnUpdateLater.setVisibility(View.GONE);
+              // btnUpdateLater.setVisibility(View.GONE);
                 btnUpdateNow.setVisibility(View.GONE);
                 btnCancelUpdate.setVisibility(View.VISIBLE);
                 btnUpdateBrowse.setVisibility(View.GONE);
@@ -289,7 +289,7 @@ public class UpdateRemindDialog extends BaseDialog {
      * 如果非强制更新，显示重试下载和浏览器下载，取消
      */
     public void showFailBtn() {
-        Toast.makeText(getContext(), "更新失败啦，请重试！", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getContext(), R.string.please2retry, Toast.LENGTH_SHORT).show();
         if (progressBar != null) {
             progressBar.setVisibility(View.GONE);
         }
@@ -303,10 +303,10 @@ public class UpdateRemindDialog extends BaseDialog {
         btnUpdateRetry.setVisibility(View.VISIBLE);
         if (0 == appUpdate.getForceUpdate()) {
             // 非强制更新
-            btnUpdateExit.setText("取消");
+            btnUpdateExit.setText(R.string.cancle);
         } else {
             // 强制更新
-            btnUpdateExit.setText("退出");
+            btnUpdateExit.setText(R.string.exit);
         }
     }
 
@@ -353,7 +353,7 @@ public class UpdateRemindDialog extends BaseDialog {
                     updateDialogListener.installApkAgain();
                 }
             } else {
-                Toast.makeText(getContext(), "您拒绝了安装未知来源应用，应用暂时无法更新！", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), R.string.refuse2install, Toast.LENGTH_SHORT).show();
                 exit();
             }
         }

@@ -21,6 +21,7 @@ import androidx.core.content.FileProvider;
 import androidx.fragment.app.FragmentActivity;
 
 import com.open.hule.library.BuildConfig;
+import com.open.hule.library.R;
 import com.open.hule.library.downloadmanager.DownloadHandler;
 import com.open.hule.library.downloadmanager.DownloadObserver;
 import com.open.hule.library.entity.AppUpdate;
@@ -136,7 +137,7 @@ public class UpdateManager implements UpdateDialogListener {
                 // 设置通知栏的标题
                 request.setTitle(getAppName());
                 // 设置通知栏的描述
-                request.setDescription("正在下载中...");
+                request.setDescription(context.getString(R.string.it_is_downing));
                 // 设置媒体类型为apk文件
                 request.setMimeType("application/vnd.android.package-archive");
                 // 开启下载，返回下载id
@@ -424,7 +425,7 @@ public class UpdateManager implements UpdateDialogListener {
                 context.startActivity(intent);
             } catch (Exception e) {
                 e.printStackTrace();
-                Toast.makeText(context, "请点击通知栏完成应用的安装！", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, R.string.clike2install, Toast.LENGTH_SHORT).show();
             } finally {
                 dismissDialog();
             }
@@ -443,7 +444,7 @@ public class UpdateManager implements UpdateDialogListener {
             if (!TextUtils.isEmpty(appUpdate.getMd5())) {
                 boolean md5IsRight = Md5Util.checkFileMd5(appUpdate.getMd5(), apkFile);
                 if (!md5IsRight) {
-                    Toast.makeText(context, "为了安全性和更好的体验，为你推荐浏览器下载更新！", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(context, "为了安全性和更好的体验，为你推荐浏览器下载更新！", Toast.LENGTH_SHORT).show();
                     downloadFromBrowse();
                     return;
                 }
