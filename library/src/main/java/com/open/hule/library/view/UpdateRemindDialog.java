@@ -163,11 +163,11 @@ public class UpdateRemindDialog extends BaseDialog {
             btnUpdateRetry = view.findViewById(R.id.btnUpdateRetry);
             // 取消更新（退出应用）
             btnUpdateExit = view.findViewById(R.id.btnUpdateExit);
-            if (TextUtils.isEmpty(appUpdate.getNewVersionCode())) {
+            if (TextUtils.isEmpty(appUpdate.getNewVersionName())) {
                 tvVersion.setVisibility(View.GONE);
             } else {
                 tvVersion.setVisibility(View.VISIBLE);
-                tvVersion.setText(String.format(getResources().getString(R.string.update_version), appUpdate.getNewVersionCode()));
+                tvVersion.setText(String.format(getResources().getString(R.string.update_version), appUpdate.getNewVersionName()));
             }
             if (TextUtils.isEmpty(appUpdate.getFileSize())) {
                 tvFileSize.setVisibility(View.GONE);
@@ -219,7 +219,7 @@ public class UpdateRemindDialog extends BaseDialog {
 
         // 取消更新的按钮文本提示
         btnUpdateLater = view.findViewById(R.id.btnUpdateLater);
-        btnUpdateLater.setText(appUpdate.getUpdateCancelText());
+      //  btnUpdateLater.setText(appUpdate.getUpdateCancelText());
         // 更新的按钮文本提示
         btnUpdateNow = view.findViewById(R.id.btnUpdateNow);
         btnUpdateNow.setText(appUpdate.getUpdateText());

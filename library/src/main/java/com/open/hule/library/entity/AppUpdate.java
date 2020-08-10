@@ -19,7 +19,7 @@ public class AppUpdate implements Parcelable {
     /**
      * 新版本号
      */
-    private String newVersionCode;
+    private String newVersionName;
     /**
      * 是否采取强制更新，默认为0，不采取强制更新，否则强制更新
      */
@@ -96,8 +96,8 @@ public class AppUpdate implements Parcelable {
         return newVersionUrl;
     }
 
-    public String getNewVersionCode() {
-        return newVersionCode;
+    public String getNewVersionName() {
+        return newVersionName;
     }
 
     public int getForceUpdate() {
@@ -162,7 +162,7 @@ public class AppUpdate implements Parcelable {
 
     private AppUpdate(Builder builder) {
         this.newVersionUrl = builder.newVersionUrl;
-        this.newVersionCode = builder.newVersionCode;
+        this.newVersionName = builder.newVersionName;
         this.forceUpdate = builder.forceUpdate;
         this.updateInfo = builder.updateInfo;
         this.fileSize = builder.fileSize;
@@ -187,7 +187,7 @@ public class AppUpdate implements Parcelable {
 
         private String newVersionUrl;
 
-        private String newVersionCode;
+        private String newVersionName;
 
         /**
          * 默认不采取强制更新
@@ -258,8 +258,8 @@ public class AppUpdate implements Parcelable {
             return this;
         }
 
-        public Builder newVersionCode(String newVersionCode) {
-            this.newVersionCode = newVersionCode;
+        public Builder newVersionName(String newVersionName) {
+            this.newVersionName = newVersionName;
             return this;
         }
 
@@ -353,7 +353,7 @@ public class AppUpdate implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(this.newVersionUrl);
-        dest.writeString(this.newVersionCode);
+        dest.writeString(this.newVersionName);
         dest.writeInt(this.forceUpdate);
         dest.writeString(this.updateInfo);
         dest.writeString(this.fileSize);
@@ -373,7 +373,7 @@ public class AppUpdate implements Parcelable {
 
     protected AppUpdate(Parcel in) {
         this.newVersionUrl = in.readString();
-        this.newVersionCode = in.readString();
+        this.newVersionName = in.readString();
         this.forceUpdate = in.readInt();
         this.updateInfo = in.readString();
         this.fileSize = in.readString();

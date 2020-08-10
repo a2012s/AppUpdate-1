@@ -14,11 +14,13 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.text.TextUtils;
 import android.util.Log;
+import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.FragmentActivity;
 
+import com.open.hule.library.BuildConfig;
 import com.open.hule.library.downloadmanager.DownloadHandler;
 import com.open.hule.library.downloadmanager.DownloadObserver;
 import com.open.hule.library.entity.AppUpdate;
@@ -37,6 +39,10 @@ import java.util.Objects;
 public class UpdateManager implements UpdateDialogListener {
 
     private static final String TAG = "UpdateManager";
+
+    private int newVersionCode;
+
+    private String apkName = "xxx.apk";
     /**
      * 是否启动自动安装
      */
@@ -72,11 +78,11 @@ public class UpdateManager implements UpdateDialogListener {
      * @param context   上下文
      * @param appUpdate 更新数据
      */
-    public void startUpdate(Context context, AppUpdate appUpdate) {
+    public void startUpdate(Context context, AppUpdate appUpdate, int newVersionCode) {
         wrfContext = new WeakReference<>(context);
-        if (context == null) {
-            throw new NullPointerException("UpdateManager======context不能为null");
-        }
+        this.newVersionCode = newVersionCode;
+        apkName = context.getPackageName() + ".apk";
+
         if (appUpdate == null) {
             throw new NullPointerException("UpdateManager======appUpdate不能为null，请配置相关更新信息！");
         }
@@ -110,12 +116,12 @@ public class UpdateManager implements UpdateDialogListener {
                 request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
                 if (TextUtils.isEmpty(appUpdate.getSavePath())) {
                     //使用系统默认的下载路径 此处为应用内 /android/data/packages ,所以兼容7.0
-                    request.setDestinationInExternalFilesDir(context, Environment.DIRECTORY_DOWNLOADS, context.getPackageName() + ".apk");
-                    deleteApkFile(Objects.requireNonNull(context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS + File.separator + context.getPackageName() + ".apk")));
+                    request.setDestinationInExternalFilesDir(context, Environment.DIRECTORY_DOWNLOADS, apkName);
+                    deleteApkFile(Objects.requireNonNull(context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS + File.separator + apkName)));
                 } else {
                     // 自定义的下载目录,注意这是涉及到android Q的存储权限，建议不要用getExternalStorageDirectory（）
-                    request.setDestinationInExternalFilesDir(context, appUpdate.getSavePath(), context.getPackageName() + ".apk");
-                    deleteApkFile(Objects.requireNonNull(context.getExternalFilesDir(appUpdate.getSavePath() + File.separator + context.getPackageName() + ".apk")));
+                    request.setDestinationInExternalFilesDir(context, appUpdate.getSavePath(), apkName);
+                    deleteApkFile(Objects.requireNonNull(context.getExternalFilesDir(appUpdate.getSavePath() + File.separator + apkName)));
                 }
                 request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_MOBILE | DownloadManager.Request.NETWORK_WIFI);
                 // 部分机型（暂时发现Nexus 6P）无法下载，猜测原因为默认下载通过计量网络连接造成的，通过动态判断一下
@@ -124,7 +130,7 @@ public class UpdateManager implements UpdateDialogListener {
                     boolean activeNetworkMetered = connectivityManager.isActiveNetworkMetered();
                     request.setAllowedOverMetered(activeNetworkMetered);
                 }
-                if(Build.VERSION.SDK_INT < Build.VERSION_CODES.Q){
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
                     request.allowScanningByMediaScanner();
                 }
                 // 设置通知栏的标题
@@ -211,9 +217,9 @@ public class UpdateManager implements UpdateDialogListener {
             Context context = wrfContext.get();
             File apkFile;
             if (TextUtils.isEmpty(filePath)) {
-                apkFile = context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS + File.separator + context.getPackageName() + ".apk");
+                apkFile = context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS + File.separator + apkName);
             } else {
-                apkFile = context.getExternalFilesDir(filePath + File.separator + context.getPackageName() + ".apk");
+                apkFile = context.getExternalFilesDir(filePath + File.separator + apkName);
             }
             // 注意系统的getExternalFilesDir（）方法如果找不到文件会默认当成目录创建
             if (apkFile != null && apkFile.isFile()) {
@@ -221,13 +227,15 @@ public class UpdateManager implements UpdateDialogListener {
                 PackageInfo packageInfo = packageManager.getPackageArchiveInfo(apkFile.getAbsolutePath(), PackageManager.GET_ACTIVITIES);
                 if (packageInfo != null) {
                     long apkVersionCode = Build.VERSION.SDK_INT >= Build.VERSION_CODES.P ? packageInfo.getLongVersionCode() : packageInfo.versionCode;
-                    if (apkVersionCode > getAppCode()) {
+                    logcat("apkVersionCode=" + apkVersionCode + ";getAppCode=" + getAppCode());
+                    //if (apkVersionCode > getAppCode()) {//已下载的apk版本 > 当前安装的版本
+                    if (apkVersionCode == newVersionCode) {//已下载的apk版本 等于 当前最新版本
                         return apkFile;
                     }
                 }
             }
         } catch (Exception e) {
-            Log.d(TAG, "checkLocalUpdate:本地目录没有已经下载的新版本");
+            logcat("checkLocalUpdate:本地目录没有已经下载的新版本");
         }
         return null;
     }
@@ -236,6 +244,7 @@ public class UpdateManager implements UpdateDialogListener {
      * 下载前清空本地缓存的文件
      */
     private void deleteApkFile(File destFileDir) {
+        logcat("deleteApkFile.getAbsolutePath= " + destFileDir.getAbsolutePath());
         if (!destFileDir.exists()) {
             return;
         }
@@ -248,6 +257,13 @@ public class UpdateManager implements UpdateDialogListener {
             }
         }
         destFileDir.delete();
+    }
+
+
+    private void logcat(String msg) {
+        if (BuildConfig.DEBUG) {
+            Log.d(TAG, msg);
+        }
     }
 
     /**
@@ -265,7 +281,7 @@ public class UpdateManager implements UpdateDialogListener {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return "下载";
+        return "download";
     }
 
     /**
@@ -301,7 +317,7 @@ public class UpdateManager implements UpdateDialogListener {
             wrfContext.get().startActivity(intent);
         } catch (Exception e) {
             e.printStackTrace();
-            Log.d(TAG, "无法通过浏览器下载！");
+            logcat("无法通过浏览器下载！");
         }
     }
 
@@ -335,6 +351,7 @@ public class UpdateManager implements UpdateDialogListener {
     public void updateDownLoad() {
         // 立即更新
         File apkFile = checkLocalUpdate(appUpdate.getSavePath());
+        logcat("appUpdate.getSavePath()=" + appUpdate.getSavePath());
         if (apkFile != null) {
             // 本地存在新版本，直接安装
             installApp(apkFile);
@@ -356,6 +373,7 @@ public class UpdateManager implements UpdateDialogListener {
     public void updateRetry() {
         // 重试
         File apkFile = checkLocalUpdate(appUpdate.getSavePath());
+        logcat("appUpdate.getSavePath()" + appUpdate.getSavePath());
         if (apkFile != null) {
             // 本地存在新版本，直接安装
             installApp(apkFile);
