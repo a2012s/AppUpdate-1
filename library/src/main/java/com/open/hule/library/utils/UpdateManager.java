@@ -44,6 +44,10 @@ public class UpdateManager implements UpdateDialogListener {
     private int newVersionCode;
 
     private String apkName = "xxx.apk";
+
+    private int state;
+
+
     /**
      * 是否启动自动安装
      */
@@ -73,6 +77,20 @@ public class UpdateManager implements UpdateDialogListener {
      */
     private UpdateRemindDialog updateRemindDialog;
 
+
+    private static final UpdateManager updateManager = new UpdateManager();
+
+
+    private UpdateManager() {
+
+    }
+
+    public static UpdateManager getInstance() {
+
+        return updateManager;
+
+    }
+
     /**
      * 开启下载更新
      *
@@ -92,7 +110,7 @@ public class UpdateManager implements UpdateDialogListener {
         Bundle bundle = new Bundle();
         bundle.putParcelable("appUpdate", appUpdate);
         updateRemindDialog = UpdateRemindDialog.newInstance(bundle).addUpdateListener(this);
-        updateRemindDialog.show(((FragmentActivity) context).getSupportFragmentManager(), "UpdateManager");
+        updateRemindDialog.show(((FragmentActivity) context).getSupportFragmentManager(), TAG);
     }
 
     /**
@@ -179,6 +197,15 @@ public class UpdateManager implements UpdateDialogListener {
         if (updateRemindDialog != null) {
             updateRemindDialog.setProgress(progress);
         }
+    }
+
+
+    public int getState() {
+        return state;
+    }
+
+    public void setState(int state) {
+        this.state = state;
     }
 
     /**

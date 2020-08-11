@@ -25,6 +25,7 @@ import androidx.core.app.ActivityCompat;
 import com.open.hule.library.R;
 import com.open.hule.library.entity.AppUpdate;
 import com.open.hule.library.listener.UpdateDialogListener;
+import com.open.hule.library.utils.UpdateManager;
 
 import java.util.Objects;
 
@@ -188,6 +189,7 @@ public class UpdateRemindDialog extends BaseDialog {
                 public void onClick(View v) {
                     if (updateDialogListener != null) {
                         updateDialogListener.cancelUpdate();
+                        UpdateManager.getInstance().setState(0);
                     }
                 }
             });
@@ -212,6 +214,7 @@ public class UpdateRemindDialog extends BaseDialog {
                 public void onClick(View v) {
                     if (updateDialogListener != null) {
                         updateDialogListener.cancelUpdate();
+                        UpdateManager.getInstance().setState(0);
                     }
                 }
             });
@@ -219,7 +222,7 @@ public class UpdateRemindDialog extends BaseDialog {
 
         // 取消更新的按钮文本提示
         btnUpdateLater = view.findViewById(R.id.btnUpdateLater);
-      //  btnUpdateLater.setText(appUpdate.getUpdateCancelText());
+        //  btnUpdateLater.setText(appUpdate.getUpdateCancelText());
         // 更新的按钮文本提示
         btnUpdateNow = view.findViewById(R.id.btnUpdateNow);
         btnUpdateNow.setText(appUpdate.getUpdateText());
@@ -232,7 +235,8 @@ public class UpdateRemindDialog extends BaseDialog {
             @Override
             public void onClick(View view) {
                 if (updateDialogListener != null) {
-                    updateDialogListener.cancelUpdate();
+                    dismiss();
+                    // updateDialogListener.cancelUpdate();
                 }
             }
         });
@@ -271,7 +275,7 @@ public class UpdateRemindDialog extends BaseDialog {
             // 非强制更新
             llEvent.setVisibility(View.VISIBLE);
             if (btnCancelUpdate != null) {
-              // btnUpdateLater.setVisibility(View.GONE);
+                // btnUpdateLater.setVisibility(View.GONE);
                 btnUpdateNow.setVisibility(View.GONE);
                 btnCancelUpdate.setVisibility(View.VISIBLE);
                 btnUpdateBrowse.setVisibility(View.GONE);
